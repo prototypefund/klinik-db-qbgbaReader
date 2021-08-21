@@ -2,8 +2,13 @@ Package: qbgbaReader
 Type: Package
 Title: Reading XML files containing "Qualitaetsberichte der Krankenhaeuser"
 Version: 0.1.3
-Author: Ulf Koether
-Maintainer: Ulf Koether <ukoether@krt-medical.de>
+Authors@R: 
+    c(person(given = "Ulf",
+             family = "Koether",
+             role = c("aut", "cre"),
+             email = "ukoether@krt-medical.de"),
+      person(given = "Project Klinik-DB",
+             role = c("cph", "fnd")))
 Description: Reading XML files containing the German "Qualitaetsberichte der Kranken-
     haeuser" obtained from the "Gemeinsamer Bundesausschuss" (GBA) and building a
     SQL-database with these.
