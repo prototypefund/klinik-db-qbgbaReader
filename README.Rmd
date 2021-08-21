@@ -15,8 +15,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-# qbgbaReader
-
 <!-- badges: start -->
 <!-- badges: end -->
 
@@ -51,7 +49,7 @@ library(progressr)
 
 ### Open connection to the database
 
-This assumes, that you have either a MySQL or a MariaDB server setup with an administrative user account (that has permission to create, drop and alter a schema). Using the odbc-package with the following syntax gave weird problems regarding the encoding of special characters, at least for us, therefore the `RMariaDB` package is used. One can use either the [MySQL-Driver](https://dev.mysql.com/downloads/connector/odbc/) or the [MariaDB connector](https://mariadb.com/downloads/#connectors). 
+This assumes, that you have either a MySQL or a MariaDB server setup with an administrative user account (that has permission to create, drop and alter a schema). Using the odbc-package with the following syntax gave weird problems regarding the encoding of special characters, at least for us. With the odbc package, you can choose either the [MySQL-Driver](https://dev.mysql.com/downloads/connector/odbc/) or the [MariaDB connector](https://mariadb.com/downloads/#connectors) as the driver. 
 
 ```{r eval = FALSE}
 # Setting up the credentials using the keyring-package:
@@ -69,7 +67,7 @@ con <- dbConnect(odbc::odbc(),
                  PWD      = keyring::key_get("mysql-localhost", "dataadmin"))
 ```
 
-Using the RMariaDB-package for the connection instead has the little inconvenience, that the user credentials must be set up using the standard authentification hashing algorithm and **not** use the newer `caching_sha2_password` algorithm, which is the default for MySQL Server version 8 and later.
+Because of the encoding difficulties, the RMariaDB-package is used for the connection instead. This again bears the little inconvenience, that the user credentials must be set up using the standard authentification hashing algorithm and **not** use the newer `caching_sha2_password` algorithm, which is the default for MySQL Server version 8 and later.
 
 ```{r eval = FALSE}
 # This works:
@@ -153,6 +151,8 @@ Good Luck!
 
 ## Funding
 
+<a href='https://klinik-db.de'><img src='man/figures/BMBF_eng.png' align="left" height="139" /></a>
+
 Sponsored through the Prototype Fund by the German Federal Ministry of Education and Research from March 2021 to August 2021. 
 
-<a href='https://klinik-db.de'><img src='man/figures/BMBF_eng.png' align="left" height="139" /></a>
+
