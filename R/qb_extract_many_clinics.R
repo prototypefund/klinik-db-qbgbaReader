@@ -1,0 +1,185 @@
+#' Safely insert complete data for many hospitals from the same year into the database.
+#'
+#' This functions wraps the function \code{\link{qb_extract_one_clinic}} into a
+#' broader structure to ensure that possible errors are captured and logged and
+#' that all specified XML-files are processed.
+#'
+#' @param conn A RMariaDB-connection object (based on the DBI-package) to the
+#'     database where the GBA data is stored.
+#'
+#' @param xml_file_names A character vector containing the paths to the XML-files
+#'     containing the detailed report (not the ones named "bund" or "Land"!).
+#'
+#' @param xml_schema_path Here, the path to the XML schema file for the year in
+#'     question is needed which is used at the beginning of the parsing attempt to
+#'     automatically check the integrity of the XML-file against the schema. The
+#'     schema files are available from the GBA.
+#'
+#' @param global_hospital_id A data frame that was manually constructed, which
+#'     comprises a list of all hospitals with all available reports starting from
+#'     2015 to 2019. Each entry gives the XML-filename, an ID that identifies the
+#'     hospital in each year, an ID that is the same over all years, the
+#'     IK number, the location number, the year, the name of the hospital,
+#'     the original name in the XML-file, the state where the hospital is located,
+#'     latitude and longitude.
+#'
+#' @param years_lookuptable A named vector comprising the years from 2015 to 2019:
+#'     Default is \code{c("1" = 2015, "2" = 2016, "3" = 2017, "4" = 2018, "5" = 2019)}.
+#'
+#' @param db_name The name of the database as a single string value. This is used
+#'     to confirm that one is connected to the desired database. Defaults to
+#'     "gbadata".
+#'
+#' @param logging A boolean value indicating if the results / errors of the data
+#'     ingestion should be written to a log-file. Defaults to \code{FALSE}.
+#'
+#' @param log_dir A string specifying the directory where a log file should be
+#'     placed. Defaults to "logs".
+#'
+#'
+#' @return As this is a wrapper function which uses \code{\link{qb_extract_one_clinic}}
+#'     together with \code{\link[purrr]{safely}} to produce a list with a result (the
+#'     string returned by \code{\link{qb_extract_one_clinic}}) or an error-message,
+#'     which is then used in a \code{\link[purrr]{map}}-function, the result is a
+#'     nested list with as many entries as XML-file names are provided as input.
+#'
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' con <- dbConnect(RMariaDB::MariaDB(),
+#'                  host     = "localhost",
+#'                  port     = 3306,
+#'                  username = keyring::key_list("mysql-localhost")[1,2],
+#'                  password = keyring::key_get("mysql-localhost", "dataadmin"),
+#'                  dbname   = "gbadata")
+#'
+#' GlobalHospitalID <- readxl::read_excel("./00-data/GlobalHospitalID.xlsx",
+#'                                        col_types = c(rep("text", times = 9),
+#'                                        "numeric",
+#'                                        "numeric"))
+#' GlobalHospitalID <- GlobalHospitalID %>%
+#'      mutate(idHospitalDataYear = case_when(
+#'             year == "2015" ~ 1L,
+#'             year == "2016" ~ 2L,
+#'             year == "2017" ~ 3L,
+#'             year == "2018" ~ 4L,
+#'             year == "2019" ~ 5L
+#'             ))
+#'
+#' reports_detailed <- list.files("../2019_v2/Berichte-Teile-A-B-C/",
+#'                                pattern = "-xml\\.xml$", full.names = TRUE)
+#' XML_Schema_path <-
+#'     "L:/19_GBA-QB/Servicedateien_2019/2020-10-07_Anlage-5_XML_Schema-BJ-2019.xsd"
+#'
+#'
+#' results_2019 <- qb_extract_many_clinics(con,
+#'                                         xml_file_names = reports_detailed,
+#'                                         xml_schema_path = XML_Schema_path,
+#'                                         global_hospital_id = GlobalHospitalID)
+#'
+#' }
+#'
+#' @export
+#'
+qb_extract_many_clinics <- function(conn = NULL,
+                                    xml_file_names = NULL,
+                                    xml_schema_path = NULL,
+                                    global_hospital_id = NULL,
+                                    years_lookuptable = c("1" = 2015,
+                                                          "2" = 2016,
+                                                          "3" = 2017,
+                                                          "4" = 2018,
+                                                          "5" = 2019),
+                                    db_name = "gbadata",
+                                    logging = FALSE,
+                                    log_dir = "logs") {
+
+
+    qb_extract_one_clinic_safely <- purrr::safely(qb_extract_one_clinic)
+
+    p <- progressr::progressor(steps = length(xml_file_names))
+
+    if (logging) {
+
+        if (!fs::dir_exists(log_dir)) fs::dir_create(log_dir)
+        logger::log_appender(logger::appender_file(tempfile(paste0(format(Sys.time(),
+                                                                          "%Y%m%d"),
+                                                                   "_qbgbaReader_"),
+                                                            tmpdir = log_dir,
+                                                            fileext = ".log")))
+
+    }
+
+
+
+    extract_one_clinic_wrapper <- function(xml_path,
+                                           conn,
+                                           xml_schema_path,
+                                           global_hospital_id = global_hospital_id,
+                                           years_lookuptable = years_lookuptable,
+                                           db_name = db_name,
+                                           logging = logging) {
+
+        p()
+
+        if (logging) {
+
+            logger::log_info(paste0("Reading file: ", xml_path))
+
+        }
+
+        tictoc::tic()
+
+        result_text <- qb_extract_one_clinic_safely(conn = conn,
+                                                    xml_path = xml_path,
+                                                    xml_schema_path = xml_schema_path,
+                                                    global_hospital_id = global_hospital_id,
+                                                    years_lookuptable = years_lookuptable,
+                                                    db_name = db_name)
+
+        end <- tictoc::toc(quiet = TRUE)
+
+        if (!is.null(result_text$result)) {
+
+            if (logging) {
+
+                logger::log_info('"{result_text$result} - "Time: {round(end$toc - end$tic, digits = getOption("digits", 5))}"')
+
+            }
+
+            return(list("File" = xml_path,
+                        "Type" = "result",
+                        "Message" = result_text$result))
+
+        } else if (!is.null(result_text$error)) {
+
+            if (logging) {
+
+                logger::log_error('"{result_text$error$message} - "Time: {round(end$toc - end$tic, digits = getOption("digits", 5))}"')
+
+            }
+
+            return(list("File" = xml_path,
+                        "Type" = "error",
+                        "Message" = result_text$error$message))
+
+        }
+
+    }
+
+
+    resList <- map(.x = xml_file_names,
+                   ~ extract_one_clinic_wrapper(xml_path = .x,
+                                                conn = conn,
+                                                xml_schema_path = xml_schema_path,
+                                                global_hospital_id = global_hospital_id,
+                                                years_lookuptable = years_lookuptable,
+                                                db_name = db_name,
+                                                logging = logging))
+
+    return(resList)
+
+}
+

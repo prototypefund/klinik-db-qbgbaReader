@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Datengestuetzte_Qualitaetssicherung xsi:noNamespaceSchemaLocation="VA1d_Qb-2019_XML_Schema_C1.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Berichtsjahr>2019</Berichtsjahr>
+    <IK_Krankenhaus>260100023</IK_Krankenhaus>
+    <Standort>01</Standort>
+    <Land>DV</Land>
+</Datengestuetzte_Qualitaetssicherung>

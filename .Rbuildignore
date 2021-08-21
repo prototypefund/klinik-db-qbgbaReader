@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+
+generate_SQL_schema.R
+INSERT_selective_lists.R
+
+^data-raw$
+^logs$
+
+^README\.Rmd$

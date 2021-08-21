@@ -1,0 +1,38 @@
+Package: qbgbaReader
+Type: Package
+Title: Reading XML files containing "Qualitaetsberichte der Krankenhaeuser"
+Version: 0.1.3
+Author: Ulf Koether
+Maintainer: Ulf Koether <ukoether@krt-medical.de>
+Description: Reading XML files containing the German "Qualitaetsberichte der Kranken-
+    haeuser" obtained from the "Gemeinsamer Bundesausschuss" (GBA) and building a
+    SQL-database with these.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Imports:
+    xml2,
+    dplyr,
+    magrittr,
+    purrr,
+    tidyselect,
+    rlang,
+    stringr,
+    tibble,
+    tidyr,
+    stats,
+    future,
+    furrr,
+    progressr,
+    readxl,
+    keyring,
+    DBI (>= 1.1.1),
+    RMariaDB (>= 1.1.1),
+    tmaptools, 
+    utils,
+    tictoc,
+    logger,
+    fs
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 4.0.0)

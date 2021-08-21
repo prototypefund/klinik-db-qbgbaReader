@@ -1,0 +1,154 @@
+#' qbgbaReader: A package for reading XML files containing a "Qualitaetsbericht"
+#' of a German hospital.
+#'
+#' This package aims at reading XML-files published by the "Gemeinsamer
+#' Bundesausschuss" (GBA) that contain information about one German hospital each.
+#' Every year, hospitals in Germany that treat patients from the compulsory health
+#' insurance system are required to publish data about themselves to the GBA.
+#' This data comes in XML-files and can be obtained in bulk from the GBA.
+#'
+#' The qbgbaReader package provides two categories of functions:
+#' The first category represents lower level functions that return specific
+#' information from the XML-files in a predicable form, and helper functions that
+#' serve this goal, the second category consists of meta-functions that bundle
+#' the former lower level ones to extract bigger parts of the overall catalogue
+#' in question. Additionally, there are some example XML-files and a dataset
+#' included:
+#'
+#' @section Example XML-files and datasets:
+#'    \itemize{
+#'         \item \link{bund}
+#'         \item \link{land}
+#'         \item \link{details}
+#'         \item \link{Fachabteilungen_2019}
+#'    }
+#'
+#' @section Lower level functions:
+#'    \itemize{
+#'
+#'         General purpose functions:
+#'         \item \link{lists_insert_single_table}
+#'         \item \link{qb_db_set_query}
+#'         \item \link{qb_extract_person}
+#'         \item \link{qb_extract_selective_lists}
+#'         \item \link{qb_extract_simple_section}
+#'    }
+#'
+#'    \itemize{
+#'
+#'         Extractor functions:
+#'         \item \link{qb_extractor_Akademische_Lehre}
+#'         \item \link{qb_extractor_Allgemeine_Informationen}
+#'         \item \link{qb_extractor_Anzahl_Betten_und_Fallzahlen}
+#'         \item \link{qb_extractor_Apparative_Ausstattung}
+#'         \item \link{qb_extractor_Arzneimitteltherapiesicherheit}
+#'         \item \link{qb_extractor_Ausbildung_andere_Heilberufe}
+#'         \item \link{qb_extractor_Barrierefreiheit}
+#'         \item \link{qb_extractor_Beschwerdemanagement}
+#'         \item \link{qb_extractor_DMP}
+#'         \item \link{qb_extractor_Einleitung}
+#'         \item \link{qb_extractor_Einrichtungsinternes_Fehlermeldesystem}
+#'         \item \link{qb_extractor_Einrichtungsuebergreifendes_Fehlermeldesystem}
+#'         \item \link{qb_extractor_Fortbildung}
+#'         \item \link{qb_extractor_Hygienepersonal}
+#'         \item \link{qb_extractor_Medizinisch_Pflegerische_Leistungsangebote}
+#'         \item \link{qb_extractor_Mindestmengen}
+#'         \item \link{qb_extractor_Nicht_Medizinische_Leistungsangebote}
+#'         \item \link{qb_extractor_OE}
+#'         \item \link{qb_extractor_Personal_des_Krankenhauses}
+#'         \item \link{qb_extractor_Pflegepersonalregelung}
+#'         \item \link{qb_extractor_QS_nach_Landesrecht}
+#'         \item \link{qb_extractor_Qualitaetssicherung}
+#'         \item \link{qb_extractor_Strukturqualitaetsvereinbarung}
+#'         \item \link{qb_extractor_Teilnahme_Notfallversorgung}
+#'         \item \link{qb_extractor_Umgang_mit_Risiken_in_der_Patientenversorgung}
+#'         \item \link{qb_extractor_Weitere_Informationen_Hygiene}
+#'    }
+#'
+#' @section Higher level functions:
+#'    \itemize{
+#'         \item \link{qb_extract_one_clinic}
+#'         \item \link{qb_extract_many_clinics}
+#'    }
+#'
+#' @docType package
+#' @name qbgbaReader
+#'
+#' @importFrom xml2 read_xml
+#' @importFrom xml2 xml_attr
+#' @importFrom xml2 xml_find_first
+#' @importFrom xml2 xml_find_all
+#' @importFrom xml2 xml_attr
+#' @importFrom xml2 xml_has_attr
+#' @importFrom xml2 xml_name
+#' @importFrom xml2 xml_text
+#' @importFrom xml2 xml_contents
+#' @importFrom xml2 xml_validate
+#' @importFrom tibble tibble
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr bind_cols
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr ungroup
+#' @importFrom dplyr case_when
+#' @importFrom dplyr filter
+#' @importFrom dplyr distinct
+#' @importFrom dplyr arrange
+#' @importFrom dplyr n
+#' @importFrom dplyr if_any
+#' @importFrom dplyr left_join
+#' @importFrom dplyr full_join
+#' @importFrom dplyr across
+#' @importFrom dplyr rename
+#' @importFrom dplyr if_else
+#' @importFrom tidyr nest
+#' @importFrom tidyr unnest
+#' @importFrom tidyr fill
+#' @importFrom tidyr pivot_longer
+#' @importFrom tidyselect all_of
+#' @importFrom tidyselect starts_with
+#' @importFrom stringr str_replace_all
+#' @importFrom stringr str_replace
+#' @importFrom stringr str_detect
+#' @importFrom stringr str_extract
+#' @importFrom stringr str_extract_all
+#' @importFrom purrr map
+#' @importFrom purrr map_dfc
+#' @importFrom purrr map_dfr
+#' @importFrom purrr map_dbl
+#' @importFrom purrr map_chr
+#' @importFrom purrr map_lgl
+#' @importFrom purrr map2_dfc
+#' @importFrom purrr map2_chr
+#' @importFrom purrr pmap_dfr
+#' @importFrom purrr pluck
+#' @importFrom purrr possibly
+#' @importFrom purrr safely
+#' @importFrom rlang is_empty
+#' @importFrom rlang .data
+#' @importFrom rlang :=
+#' @importFrom readxl excel_sheets
+#' @importFrom readxl read_excel
+#' @importFrom RMariaDB dbConnect
+#' @importFrom RMariaDB dbGetInfo
+#' @importFrom RMariaDB dbListTables
+#' @importFrom RMariaDB dbExistsTable
+#' @importFrom RMariaDB dbListFields
+#' @importFrom RMariaDB dbSendStatement
+#' @importFrom RMariaDB dbSendQuery
+#' @importFrom RMariaDB dbGetQuery
+#' @importFrom RMariaDB dbBind
+#' @importFrom RMariaDB dbClearResult
+#' @importFrom RMariaDB dbDisconnect
+#' @importFrom RMariaDB dbHasCompleted
+#' @importFrom RMariaDB dbFetch
+#' @importFrom RMariaDB dbBegin
+#' @importFrom RMariaDB dbCommit
+#' @importFrom utils data
+#'
+NULL
+utils::globalVariables("where")
+utils::globalVariables("last_col")
+utils::globalVariables("everything")
+
