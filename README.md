@@ -89,9 +89,10 @@ Then, we further need the list of XML-files with the full path names,
 the XML schema file for the corresponding year (these can be obtained
 from the [GBA
 website](https://www.g-ba.de/themen/qualitaetssicherung/datenerhebung-zur-qualitaetssicherung/datenerhebung-qualitaetsbericht/servicedateien/)
-together withthe Excel files with the selective lists for the respective
-years. For your convenience, schema and selective list files are
-included in the source of this package.
+together with the Excel files comprising the selective lists for the
+respective years. For your convenience, schema and selective list files
+are included in the source of this package (not in the already built and
+installed package!!), look into directory `./data-raw`.
 
 ``` r
 lists_2019 <-
@@ -105,13 +106,15 @@ reports_detailed <- list.files("../2019_v2/Berichte-Teile-A-B-C/",
                                full.names = TRUE)
 ```
 
-Next, we need the data set with the glocal identifier for each of the
+Next, we need the data set with the global identifier for each of the
 hospitals. In this file, every hospital is assigned to one ID number
 that is the same over several years, so that you can track the data for
 one hospital over the years. The problem is acutally, that the ID listed
 in the XML files (i.e., the “IK-number”) is not correct sometimes and
 also might change over time. Therefore, the raw data cannot identify
-each hospital correctly through time.
+each hospital correctly through time. Again, this file is included in
+the directory `./data-raw` (i.e., in the source files), not in the built
+and installed one!
 
 ``` r
 GlobalHospitalID <- readxl::read_excel("./data-raw/GlobalHospitalID.xlsx",

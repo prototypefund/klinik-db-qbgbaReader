@@ -30,8 +30,6 @@ Imports:
     tibble,
     tidyr,
     stats,
-    future,
-    furrr,
     progressr,
     readxl,
     keyring,
