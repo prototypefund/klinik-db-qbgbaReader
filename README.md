@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 The goal of qbgbaReader is to read XML files containing the German
-“Qualitaetsberichte der Kranken-haeuser” obtained from the “Gemeinsamer
+“Qualitaetsberichte der Krankenhaeuser” obtained from the “Gemeinsamer
 Bundesausschuss” (GBA) and insert them into a SQL-database.
 
 ## Installation
@@ -39,7 +39,7 @@ library(RMariaDB)
 library(progressr)
 ```
 
-### Open connection to the database
+### Open a connection to the database
 
 This assumes, that you have either a MySQL or a MariaDB server setup
 with an administrative user account (that has permission to create, drop
@@ -57,7 +57,7 @@ keyring::key_set(service = "mysql-localhost",
                  username = "dataadmin")
 
 
-# Not working because of encoding errors with the German special characters:
+# NOT working because of encoding errors with the German special characters:
 con <- dbConnect(odbc::odbc(),
                  Driver   = "MariaDB ODBC 3.1 Driver",
                  Server   = "localhost",
@@ -69,8 +69,10 @@ con <- dbConnect(odbc::odbc(),
 Because of the encoding difficulties, the RMariaDB-package is used for
 the connection instead. This again bears the little inconvenience, that
 the user credentials must be set up using the standard authentification
-hashing algorithm and **not** use the newer `caching_sha2_password`
-algorithm, which is the default for MySQL Server version 8 and later.
+hashing algorithm (`mysql_native_password`) and **not** use the newer
+`caching_sha2_password` algorithm, which is the default for MySQL Server
+version 8 and later. For a discussion of this matter, see this [Github
+issue](https://github.com/r-dbi/RMariaDB/issues/134).
 
 ``` r
 # This works:
@@ -92,7 +94,10 @@ years. For your convenience, schema and selective list files are
 included in the source of this package.
 
 ``` r
-lists_2019 <- qb_extract_selective_lists("./data-raw/SelectiveLists/2020-04-01_Anlage-4_Qb-R_Auswahllisten_BJ-2019.xlsx")
+lists_2019 <-
+  qb_extract_selective_lists(
+    "./data-raw/SelectiveLists/2020-04-01_Anlage-4_Qb-R_Auswahllisten_BJ-2019.xlsx"
+  )
 XML_Schema_path_2019 <- "./data-raw/XML-SchemaFiles/2020-10-07_Anlage-5_XML_Schema-BJ-2019.xsd"
 
 reports_detailed <- list.files("../2019_v2/Berichte-Teile-A-B-C/", 
@@ -128,7 +133,6 @@ Now you can read in the complete year of data in one go, with activated
 file logging, error catching and a nice progressbar:
 
 ``` r
-
 results_2019_all <- with_progress(
     qb_extract_many_clinics(
         conn = con,

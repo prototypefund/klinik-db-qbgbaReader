@@ -82,17 +82,16 @@
 #' @examples
 #'
 #' \dontrun{
-#' Hospital <- tibble("idHospital" = NA_integer,
+#' Hospital <- tibble("idHospital" = NA_integer_,
 #'                    "xmlFileName" = "260100023-01-2019",
 #'                    "description" = "Diakonissenkrankenhaus Flensburg",
-#'                    "alias" = NA_character,
+#'                    "alias" = NA_character_,
 #'                    "ikNumber" = "260100023",
 #'                    "locationNumber" = "99",
 #'                    "academicTeachingHospital" = 1L,
 #'                    "psychiatricHospital" = 1L,
 #'                    "urlHospital" = "http://www.diako.de",
-#'                    "urlAdditionalInformation" =
-#'                      "https://www.diako-krankenhaus.de/ueber-uns/qualitaet/"
+#'                    "urlAdditionalInformation" = NA_character_,
 #'                    "HospitalDataYear_idHospitalDataYear" = 5L)
 #'
 #' con <- dbConnect(RMariaDB::MariaDB(),
@@ -104,7 +103,7 @@
 #'
 #' Hospital_updated <- qb_db_set_query(con,
 #'                                     Hospital,
-#'                                     table_name = "hospital")
+#'                                     table_name = "Hospital")
 #'
 #' }
 #'

@@ -1,0 +1,75 @@
+destination: public
+
+template:
+  bootstrap: 4
+  bootswatch: cerulean
+
+home:
+  title: XML-Parser for the Klinik-DB project
+  icon: fas fa-home fa-lg
+  links:
+  - text: Online hospital search engine
+    href: https://klinik-db.de/
+
+navbar:
+  structure:
+    left:  [home, reference]
+    right: [gitlab]
+  components:
+    gitlab:
+      icon: fab fa-gitlab fa-lg
+      href: https://gitlab.com/klinik-db/qbgbaReader
+
+reference:
+- title: General description
+  contents:
+  - qbgbaReader
+
+- title: Example XML-files and datasets
+  contents:
+  - bund
+  - land
+  - details
+  - Fachabteilungen_2019
+
+- title: Higher level functions
+  contents:
+  - qb_extract_one_clinic
+  - qb_extract_many_clinics
+
+- title: General purpose functions
+  contents:
+  - lists_insert_single_table
+  - qb_db_set_query
+  - qb_extract_person
+  - qb_extract_selective_lists
+  - qb_extract_simple_section
+
+- title: Extractor functions
+  contents:
+  - qb_extractor_Akademische_Lehre
+  - qb_extractor_Allgemeine_Informationen
+  - qb_extractor_Anzahl_Betten_und_Fallzahlen
+  - qb_extractor_Apparative_Ausstattung
+  - qb_extractor_Arzneimitteltherapiesicherheit
+  - qb_extractor_Ausbildung_andere_Heilberufe
+  - qb_extractor_Barrierefreiheit
+  - qb_extractor_Beschwerdemanagement
+  - qb_extractor_DMP
+  - qb_extractor_Einleitung
+  - qb_extractor_Einrichtungsinternes_Fehlermeldesystem
+  - qb_extractor_Einrichtungsuebergreifendes_Fehlermeldesystem
+  - qb_extractor_Fortbildung
+  - qb_extractor_Hygienepersonal
+  - qb_extractor_Medizinisch_Pflegerische_Leistungsangebote
+  - qb_extractor_Mindestmengen
+  - qb_extractor_Nicht_Medizinische_Leistungsangebote
+  - qb_extractor_OE
+  - qb_extractor_Personal_des_Krankenhauses
+  - qb_extractor_Pflegepersonalregelung
+  - qb_extractor_QS_nach_Landesrecht
+  - qb_extractor_Qualitaetssicherung
+  - qb_extractor_Strukturqualitaetsvereinbarung
+  - qb_extractor_Teilnahme_Notfallversorgung
+  - qb_extractor_Umgang_mit_Risiken_in_der_Patientenversorgung
+  - qb_extractor_Weitere_Informationen_Hygiene

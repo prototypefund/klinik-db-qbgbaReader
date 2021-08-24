@@ -9,3 +9,7 @@ INSERT_selective_lists.R
 ^logs$
 
 ^README\.Rmd$
+^_pkgdown\.yml$
+^public$
+^pkgdown$
+^\.gitlab-ci\.yml$

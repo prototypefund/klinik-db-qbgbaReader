@@ -1,0 +1,16 @@
+image: rocker/tidyverse:4.1.1
+
+before_script:
+  - R -e 'install.packages("pkgdown")'
+  - R -e 'devtools::install()'
+
+pages:
+  stage: deploy
+  script:
+    - R -e "dir(); getwd(); sessionInfo(); pkgdown::build_site()"
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
+
